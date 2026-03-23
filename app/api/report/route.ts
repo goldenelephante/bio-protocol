@@ -13,7 +13,8 @@ export const runtime = "nodejs";
 // Input validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const NAME_MAX    = 100;
-const NAME_REGEX  = /^[a-zA-ZÀ-ÖØ-öø-ÿ'\- ]+$/;
+const NAME_REGEX  = /^[a-zA-ZÀ-ÖØ-öø-ÿ'\- ]+$/; // Letters (incl. accented), apostrophe, hyphen, space
+
 interface ReportRequest {
   name: string;
   email: string;
