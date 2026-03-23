@@ -4,10 +4,18 @@ import { getPhase } from "@/lib/moon";
 import { BIOMARKERS, PROTOCOLS } from "@/lib/data";
 import type { User } from "@supabase/supabase-js";
 
+interface Profile {
+  full_name?: string;
+  bio_type?: string;
+  bio_code?: string;
+  menopause_stage?: string;
+  wellness_score?: number;
+}
+
 const STATUS_COLORS: Record<string, string[]> = {
-  low: ["#C85C30", "rgba(200,92,48,0.1)"],
+  low:      ["#C85C30", "rgba(200,92,48,0.1)"],
   elevated: ["#B87830", "rgba(184,120,48,0.1)"],
-  optimal: ["#2E8A5E", "rgba(46,138,94,0.1)"],
+  optimal:  ["#2E8A5E", "rgba(46,138,94,0.1)"],
   moderate: ["#4A6A8A", "rgba(74,106,138,0.1)"],
 };
 
@@ -25,13 +33,14 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-export default function DashboardClient({ user, profile }: { user: User; profile: Record<string, unknown> | null }) {
+export default function DashboardClient({ user, profile }: { user: User; profile: Profile | null }) {
   const moon = getPhase(new Date());
   const score = profile?.wellness_score ?? 78;
   const bioType = profile?.bio_type ?? "Lunar Kapha";
   const bioCode = profile?.bio_code ?? "LK-7";
   const stage = profile?.menopause_stage ?? "Late Perimenopause";
-  const firstName = (profile?.full_name as string | undefined)?.split(" ")[0] ?? user.email?.split("@")[0] ?? "there";
+  const fullName = profile?.full_name ?? user.email ?? "User";
+  const firstName = fullName.split(" ")[0] ?? fullName;
 
   const CSS = `
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400&display=swap');
@@ -58,7 +67,7 @@ export default function DashboardClient({ user, profile }: { user: User; profile
   return (
     <div className="bp">
       <style>{CSS}</style>
-      <Sidebar userName={profile?.full_name ?? user.email ?? "User"} userType={bioType} userCode={bioCode} />
+      <Sidebar userName={fullName} userType={bioType} userCode={bioCode} />
       <main className="bp-main">
         <div className="ph fin">Good morning, {firstName}.</div>
         <div className="ps">{new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })} · Your protocol is active</div>
@@ -74,9 +83,7 @@ export default function DashboardClient({ user, profile }: { user: User; profile
               You carry deep vitality reserves with strong lunar rhythm sensitivity. Your biology thrives with consistent routines, hormonal attunement & grounding anti-inflammatory protocols.
             </div>
             <div style={{ display: "flex", gap: 6 }}>
-              {[stage].map(t => (
-                <span key={t} style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.06)", padding: "4px 10px", borderRadius: 6 }}>{t}</span>
-              ))}
+              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.06)", padding: "4px 10px", borderRadius: 6 }}>{stage}</span>
             </div>
           </div>
 
